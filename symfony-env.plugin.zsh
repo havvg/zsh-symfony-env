@@ -1,7 +1,5 @@
 function _is_symfony() {
-    local CONSOLE="`pwd`/app/console"
-
-    if [ -e $CONSOLE ]
+    if [ -e "`pwd`/bin/console" ] || [ -e "`pwd`/app/console" ]
     then
         return 1
     fi
@@ -15,26 +13,28 @@ function symfony_env_prompt() {
 
     local SEPARATOR="$FG[237]:"
     local RED="%{$fg[red]%}"
-    local GREEN="%{$fg[green]%}"
     local YELLOW="%{$fg[yellow]%}"
 
-    echo -n " $FG[237]sf$SEPARATOR";
+    local SYMFONY=""
 
-    if [[ $SYMFONY_ENV != dev* ]];
-        then echo -n "$YELLOW";
+    echo -n "";
+
+    if [[ ${SYMFONY_ENV} != dev* ]]; then
+        SYMFONY+="${SEPARATOR}${YELLOW}${SYMFONY_ENV}"
     fi
-    if [[ $SYMFONY_ENV == prod* ]];
-        then echo -n "$RED";
-    fi
-
-    echo -n "$SYMFONY_ENV"
-
-    if [ $SYMFONY_DEBUG -eq 1 ];
-        then echo -n "${SEPARATOR}${GREEN}debug";
-        else echo -n "${SEPARATOR}${YELLOW}no-debug";
+    if [[ ${SYMFONY_ENV} == prod* ]]; then
+        SYMFONY+="${SEPARATOR}${RED}${SYMFONY_ENV}"
     fi
 
-    if [ $SYMFONY_CACHE -eq 1 ];
-        then echo -n "${SEPARATOR}${YELLOW}cache";
+    if [ ${SYMFONY_DEBUG} -eq 0 ]; then
+        SYMFONY+="${SEPARATOR}${YELLOW}no-debug"
+    fi
+
+    if [ ${SYMFONY_CACHE} -eq 1 ]; then
+        SYMFONY+="${SEPARATOR}${YELLOW}cache"
+    fi
+
+    if [[ -n ${SYMFONY} ]]; then
+        echo -n " $FG[237]sf${SYMFONY}"
     fi
 }
